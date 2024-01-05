@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import connectDB from "./database/db.js";
 dotenv.config();
 
 const app = express();
@@ -9,6 +10,15 @@ app.get("/", (req, res) => {
   res.send("Server started");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.log(`Error while connecting to mongodb database ${error.message}`);
+  }
+};
+
+startServer();
