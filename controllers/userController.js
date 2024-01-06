@@ -95,5 +95,14 @@ export const updateUser = asyncHandler(async (req, res) => {
 });
 
 export const deleteUser = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "delete user" });
+  const user = await userModel.findById(req.user._id);
+
+  if (user) {
+    res.clearCookie("jwt");
+    await userModel.deleteOne({ _id: user._id });
+    res.status(200).json({ message: "user deleted successfully" });
+  } else {
+    res.status(404);
+    throw new Error("User Not Found");
+  }
 });
