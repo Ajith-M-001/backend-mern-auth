@@ -32,7 +32,30 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "login user" });
+  const { email, password } = req.body;
+
+  const userExists = await userModel.findOne({ email });
+  if (!userExists) {
+    res.status(401);
+    throw new Error("Invalid Email or password");
+  }
+
+  const isPasswordMatched = await bcryptjs.compare(
+    password,
+    userExists.password
+  );
+
+  if (!isPasswordMatched) {
+    res.status(401);
+    throw new Error("Invalid Email or password");
+  }
+
+  res.status(200).json({
+    _id: userExists._id,
+    name: userExists.name,
+    email: userExists.email,
+    image: userExists.image,
+  });
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
