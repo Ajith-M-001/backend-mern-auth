@@ -17,5 +17,7 @@ export const updateUser = asyncHandler(async (req, res) => {
 });
 
 export const deleteUser = asyncHandler(async (req, res) => {
+  res.status(200);
+  throw new Error("ajith said to show the error");
   res.status(200).json({ message: "delete user" });
 });
