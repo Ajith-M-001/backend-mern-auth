@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import userModel from "../model/userModel.js";
 import bcryptjs from "bcryptjs";
+import generateToken from "../utils/generateToken.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -50,7 +51,9 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid Email or password");
   }
 
+  const token = generateToken(res, userExists._id);
   res.status(200).json({
+    token,
     _id: userExists._id,
     name: userExists.name,
     email: userExists.email,
