@@ -67,7 +67,31 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export const updateUser = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "update user" });
+  const user = await userModel.findById(req.user._id);
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.image = req.body.image || user.image;
+
+    if (req.body.password) {
+      const hashedpassword = await bcryptjs.hash(req.body.password, 10);
+      user.password = hashedpassword;
+    }
+
+    const updatedUser = await user.save();
+
+    if (updatedUser) {
+      res.status(200).json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        image: updatedUser.image,
+      });
+    }
+  } else {
+    res.status(404);
+    throw new Error("User Not Found");
+  }
 });
 
 export const deleteUser = asyncHandler(async (req, res) => {
